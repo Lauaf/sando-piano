@@ -34,6 +34,14 @@ BACKENDS = [
     {'nombre': 'Ollama', 'base': 'http://127.0.0.1:11434/v1',
      'extra': {'reasoning_effort': 'low'}, 'preferidos': ['gpt-oss:20b', 'qwen', 'gemma', 'llama']},
 ]
+# Versión del código con la que arrancó el servidor: iniciar.pyw la compara con la de los archivos
+# actuales y, si cambiaron (ej: después de un git pull), reinicia el servidor.
+def version_codigo():
+    archivos = [Path(__file__).resolve(), *sorted((Path(__file__).resolve().parent / 'herramientas').glob('*.py'))]
+    return str(int(sum(f.stat().st_mtime for f in archivos if f.exists())))
+
+
+VERSION = version_codigo()
 _cache_modelos = {}  # base -> (instante, id_modelo | None)
 _lock_partida = threading.Lock()
 _locks_partitura = {}  # clave -> Lock (que dos pedidos iguales no generen la misma partitura a la vez)
@@ -404,6 +412,8 @@ class Manejador(BaseHTTPRequestHandler):
             d = leer_cine(q['id'])
             d['analizando'] = q['id'] in _analizando
             return self._responder(200, d)
+        if ruta == '/api/version':
+            return self._responder(200, {'version': VERSION})
         if ruta == '/api/ia/estado':
             for b in BACKENDS:
                 m = modelo_de(b)
@@ -428,6 +438,9 @@ class Manejador(BaseHTTPRequestHandler):
             datos = self._leer_json()
         except Exception as e:
             return self._responder(400, {'error': str(e)})
+        if ruta == '/api/apagar':
+            threading.Thread(target=self.server.shutdown, daemon=True).start()
+            return self._responder(200, {'ok': True})
         if ruta == '/api/partida':
             with _lock_partida:
                 DATOS.mkdir(exist_ok=True)
@@ -589,6 +602,7 @@ def main():
     if srv:
         avisar(f'三道 Sandō en {url}')
         srv.serve_forever()
+        srv.server_close()
 
 
 if __name__ == '__main__':
