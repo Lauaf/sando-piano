@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三道 Sandō</title>
+<link rel="icon" href="icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<div id="consola">
+  <header id="hud">
+    <div class="hud-nombre"><span id="hud-titulo">三道</span><span id="hud-nivel">Nv 1</span></div>
+    <div class="hud-skills">
+      <div class="skill" data-skill="jp"><span class="ico">あ</span><div class="barra"><i></i></div><b>1</b></div>
+      <div class="skill" data-skill="piano"><span class="ico">♪</span><div class="barra"><i></i></div><b>1</b></div>
+      <div class="skill" data-skill="cafe"><span class="ico">☕</span><div class="barra"><i></i></div><b>1</b></div>
+    </div>
+    <div class="hud-der">
+      <span id="hud-racha" title="Racha de días practicando">🔥 0</span>
+      <span id="hud-ia" title="Estado de la IA local">IA ···</span>
+      <button id="btn-menu" title="Menú (Esc)">☰</button>
+    </div>
+  </header>
+
+  <main id="pantalla">
+    <canvas id="lienzo" width="240" height="160"></canvas>
+    <div id="cartel-lugar" class="oculto"></div>
+    <div id="dialogo" class="oculto">
+      <div id="dialogo-nombre"></div>
+      <div id="dialogo-texto"></div>
+      <div id="dialogo-trad" class="oculto"></div>
+      <div id="dialogo-opciones"></div>
+      <div id="dialogo-sigue">▼</div>
+    </div>
+    <div id="globo" class="oculto"></div>
+    <section id="actividad" class="oculto"></section>
+  </main>
+
+  <footer id="ayuda">
+    <span><kbd>←↑↓→</kbd>/<kbd>WASD</kbd> caminar</span>
+    <span><kbd>Z</kbd>/<kbd>Enter</kbd>/<kbd>Espacio</kbd> hablar</span>
+    <span><kbd>X</kbd>/<kbd>Esc</kbd> volver</span>
+    <span><kbd>M</kbd> menú</span>
+    <span>Clic en palabras japonesas = traducción</span>
+  </footer>
+</div>
+<div id="toasts"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

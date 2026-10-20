@@ -1,0 +1,34 @@
+# Python environments and installed tools
+/venv/
+/venv-*/
+/.venv/
+/.herr/
+/.pip-cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local saves, uploads, import jobs, and generated data
+/datos/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
+# Editor, operating system, and temporary files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+*.tmp
+*.swp
+node_modules/
