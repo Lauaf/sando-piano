@@ -133,7 +133,7 @@ ruby rt { font-size: .45em; color: #8b6fa8; }
 .hp i { display: block; height: 100%; background: var(--bien); transition: width .3s; }
 .hp.enemigo i { background: var(--mal); }
 .luchador { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.luchador canvas { width: calc(var(--px) * 30); height: calc(var(--px) * 30); image-rendering: pixelated; }
+.luchador canvas, .luchador img.arky { width: calc(var(--px) * 30); height: calc(var(--px) * 30); image-rendering: pixelated; }
 .sacudir { animation: sacudir .35s; }
 @keyframes sacudir { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
 .flotante { position: absolute; font-size: calc(var(--px) * 9); animation: flota 1s forwards; pointer-events: none; z-index: 40; }
