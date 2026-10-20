@@ -91,6 +91,8 @@ const POOL = {
     { ev: 'pedido_ok', meta: 4, texto: 'Atendé 4 pedidos bien hechos' },
     { ev: 'bitacora', meta: 1, texto: 'Registrá un café real en la bitácora' },
     { ev: 'quiz_cafe_ok', meta: 6, texto: 'Acertá 6 preguntas del quiz barista' },
+    { ev: 'academia', meta: 3, texto: 'Completá 3 actividades de la Academia de barismo' },
+    { ev: 'diag_ok', meta: 3, texto: 'Diagnosticá bien 3 espressos' },
   ],
 };
 
@@ -119,6 +121,15 @@ const LOGROS = [
   { id: 'cancion5', txt: '5 canciones terminadas', cond: () => (P.stats.cancion_fin || 0) >= 5 },
   { id: 'brew_perfecto', txt: 'Una extracción perfecta en el laboratorio', cond: () => (P.stats.brew_perfecto || 0) >= 1 },
   { id: 'bitacora10', txt: '10 cafés reales en la bitácora', cond: () => (P.stats.bitacora || 0) >= 10 },
+  // Academia de barismo: logros por habilidades reales, no por tiempo jugado
+  { id: 'esp_balanceado', txt: 'Un espresso balanceado y sin canalizar', cond: () => (P.stats.esp_ok || 0) >= 1 },
+  { id: 'carrera_espresso', txt: 'Completaste la carrera de espresso', cond: () => (P.stats.carrera_espresso || 0) >= 1 },
+  { id: 'diagnostico10', txt: '10 espressos bien diagnosticados', cond: () => (P.stats.diag_ok || 0) >= 10 },
+  { id: 'corazon', txt: 'Tu primer corazón de latte art', cond: () => (P.stats.latte_corazon || 0) >= 1 },
+  { id: 'rosetta', txt: 'Una rosetta aprobada', cond: () => (P.stats.latte_rosetta || 0) >= 1 },
+  { id: 'rush_limpio', txt: 'Un turno de Rush Hour sin perder clientes', cond: () => (P.stats.rush_limpio || 0) >= 1 },
+  { id: 'cientifico', txt: '5 experimentos A/B cambiando una sola variable', cond: () => (P.stats.ab_unavariable || 0) >= 5 },
+  { id: 'tostador', txt: 'Un blend aprobado por el tostador', cond: () => (P.stats.blend_ok || 0) >= 1 },
   { id: 'trinidad', txt: 'Las tres sendas en un mismo día', cond: () => { const h = P.historial[hoy()]; return h && h.jp > 0 && h.piano > 0 && h.cafe > 0; } },
 ];
 function kanaDominados(tipo) {
