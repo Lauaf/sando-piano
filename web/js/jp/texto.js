@@ -138,7 +138,8 @@ export function mostrarGlobo(tok, ancla, alGuardar = null) {
   const g = $('#globo');
   document.querySelectorAll('.pal.activa').forEach(x => x.classList.remove('activa'));
   ancla.classList.add('activa');
-  g.replaceChildren(
+  // replaceChildren escribe "null" para los null: se filtran
+  g.replaceChildren(...[
     el('div.g-pal', tok.t),
     tok.r && tok.r !== tok.t ? el('div.g-lect', tok.r) : null,
     el('div.g-lect', aRomaji(tok.r || tok.t)),
@@ -151,7 +152,7 @@ export function mostrarGlobo(tok, ancla, alGuardar = null) {
         e.currentTarget.textContent = alGuardar(tok) ? '⭐ ya estaba en tu mazo' : '⭐ ¡guardada!';
         e.currentTarget.disabled = true;
       } }, '☆ guardar') : null),
-  );
+  ].filter(Boolean));
   g.classList.remove('oculto');
   const cont = $('#pantalla').getBoundingClientRect();
   const r = ancla.getBoundingClientRect();
