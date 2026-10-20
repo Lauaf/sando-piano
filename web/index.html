@@ -2,9 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Sandō: un pueblo pixel art para aprender japonés, practicar piano y preparar café.">
+<meta name="theme-color" content="#14111f">
 <title>三道 Sandō</title>
 <link rel="icon" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
 <link rel="stylesheet" href="estilo.css">
@@ -12,16 +16,17 @@
 <body>
 <div id="consola">
   <header id="hud">
-    <div class="hud-nombre"><span id="hud-titulo">三道</span><span id="hud-nivel">Nv 1</span></div>
+    <button id="hud-perfil" class="hud-nombre"><span id="hud-titulo">三道</span><span id="hud-nivel">Nv 1</span></button>
     <div class="hud-skills">
       <div class="skill" data-skill="jp"><span class="ico">あ</span><div class="barra"><i></i></div><b>1</b></div>
       <div class="skill" data-skill="piano"><span class="ico">♪</span><div class="barra"><i></i></div><b>1</b></div>
       <div class="skill" data-skill="cafe"><span class="ico">☕</span><div class="barra"><i></i></div><b>1</b></div>
     </div>
     <div class="hud-der">
+      <button id="hud-misiones" title="Misiones de hoy">✅ 0/3</button>
       <span id="hud-racha" title="Racha de días practicando">🔥 0</span>
       <span id="hud-ia" title="Estado de la IA local">IA ···</span>
-      <button id="btn-menu" title="Menú (Esc)">☰</button>
+      <button id="btn-menu" title="Mapa (M / Esc)" aria-label="Abrir el mapa">☰</button>
     </div>
   </header>
 
@@ -38,17 +43,15 @@
     <div id="globo" class="oculto"></div>
     <section id="actividad" class="oculto"></section>
     <div id="menu-rapido" class="oculto"></div>
+    <div id="fundido"></div>
+    <div id="titulo" class="oculto"></div>
   </main>
+  <div id="tactil" class="oculto"></div>
 
-  <footer id="ayuda">
-    <span><kbd>←↑↓→</kbd>/<kbd>WASD</kbd> caminar</span>
-    <span><kbd>Z</kbd>/<kbd>Enter</kbd>/<kbd>Espacio</kbd> hablar</span>
-    <span><kbd>X</kbd>/<kbd>Esc</kbd> volver</span>
-    <span><kbd>M</kbd>/<kbd>1</kbd>–<kbd>6</kbd> ir a un lugar</span>
-    <span>Clic en palabras japonesas = traducción</span>
-  </footer>
+  <footer id="ayuda"></footer>
 </div>
-<div id="toasts"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="celebracion" class="oculto" aria-live="assertive"></div>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -35,6 +35,8 @@ export function abrir(clase, titulo, render, { sub, alCerrar } = {}) {
   alCerrarTodo = alCerrar || null;
   actividad.abierta = true;
   sfx.puerta();
+  // transición de entrada tipo "iris" (como al cruzar una puerta en los juegos de GBA)
+  raiz.classList.remove('iris'); void raiz.offsetWidth; raiz.classList.add('iris');
   ir(titulo, render, { sub });
 }
 
@@ -57,6 +59,8 @@ export function cerrar() {
   raiz.classList.add('oculto');
   raiz.replaceChildren();
   actividad.abierta = false;
+  const f = $('#fundido'); // al salir, el pueblo aparece desde negro
+  if (f) { f.classList.remove('activo'); void f.offsetWidth; f.classList.add('activo'); }
   ocultarGlobo();
   const cb = alCerrarTodo;
   alCerrarTodo = null;
@@ -72,4 +76,55 @@ addEventListener('keydown', e => {
     e.stopImmediatePropagation(); // si no, la misma tecla abre el menú del mundo al cerrar
     volver();
   }
+});
+
+// ---------- Navegación con flechas (teclado, mando o cruceta) entre los botones de la ventana ----------
+// Mueve el foco al botón más cercano en esa dirección. Si el minijuego ya usa las flechas
+// (latte art, pedidos, cine…) llama a preventDefault y acá no se hace nada.
+const FOCO = 'button:not(:disabled), a[href], input:not([type=hidden]):not(:disabled), select, [tabindex]:not([tabindex="-1"])';
+
+function visibles() {
+  return [...raiz.querySelectorAll(FOCO)].filter(n => {
+    if (n.closest('[hidden], .oculto')) return false;
+    const r = n.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  });
+}
+
+function moverFoco(tecla) {
+  const lista = visibles();
+  if (!lista.length) return;
+  const actual = document.activeElement;
+  let destino = null;
+  if (!actual || actual === document.body || !raiz.contains(actual)) {
+    const enCuerpo = lista.filter(n => n.closest('.act-cuerpo'));
+    destino = enCuerpo.find(n => n.matches('.tarjeta, .ac-leccion, .poster')) || enCuerpo.find(n => n.matches('.btn.prim')) || enCuerpo[0] || lista[0];
+  } else {
+    const a = actual.getBoundingClientRect();
+    const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+    const [ex, ey] = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] }[tecla];
+    let mejor = Infinity;
+    for (const n of lista) {
+      if (n === actual) continue;
+      const r = n.getBoundingClientRect();
+      const dx = r.left + r.width / 2 - ax, dy = r.top + r.height / 2 - ay;
+      const avance = dx * ex + dy * ey;          // cuánto avanza en la dirección pedida
+      const desvio = Math.abs(dx * ey) + Math.abs(dy * ex); // cuánto se corre hacia el costado
+      if (avance <= 4) continue;
+      const puntaje = avance + desvio * 2.2;
+      if (puntaje < mejor) { mejor = puntaje; destino = n; }
+    }
+  }
+  if (!destino) return;
+  destino.focus({ preventScroll: true });
+  destino.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  sfx.cursor();
+}
+
+addEventListener('keydown', e => {
+  if (!actividad.abierta || !e.key.startsWith('Arrow') || e.altKey || e.ctrlKey || e.metaKey) return;
+  const foco = document.activeElement;
+  const enOtroControl = foco && foco !== document.body && raiz.contains(foco) && !/^(BUTTON|A)$/.test(foco.tagName);
+  if (enOtroControl) return; // un slider, un campo de texto o un canvas usan las flechas a su manera
+  setTimeout(() => { if (!e.defaultPrevented && actividad.abierta) moverFoco(e.key); }, 0);
 });

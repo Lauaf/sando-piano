@@ -229,6 +229,7 @@ def analizar_cine(vid):
 
 mimetypes.add_type('text/javascript', '.js')
 mimetypes.add_type('text/css', '.css')
+mimetypes.add_type('application/manifest+json', '.webmanifest')
 
 
 def _get_json(url, timeout=2.5):

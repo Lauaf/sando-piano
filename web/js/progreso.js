@@ -1,6 +1,6 @@
 // Estado de la partida: XP por habilidad, niveles, racha, misiones diarias,
 // repaso espaciado (Leitner) y guardado (servidor + localStorage de respaldo).
-import { hoy, diasEntre, toast, sfx, elegir, mezclar, $ } from './util.js';
+import { hoy, diasEntre, toast, celebrar, elegir, mezclar, $ } from './util.js';
 
 export const SKILLS = {
   jp: { nombre: 'Japonés', ico: 'あ', titulos: ['Turista', 'Aprendiz de kana', 'Lector de kana', 'Viajero', 'Conversador', 'Senpai', 'Sensei'] },
@@ -23,7 +23,7 @@ const NUEVA = () => ({
   stats: {},              // contadores varios (eventos)
   logros: [],
   pos: null,
-  opciones: { sonido: true },
+  opciones: { sonido: true, volumen: 100, texto: 'normal', escalaEntera: false, tactil: 'auto' },
 });
 
 export let P = NUEVA();
@@ -47,10 +47,9 @@ export function ganarXP(skill, xp, motivo = '') {
   actualizarRacha();
   const despues = nivelDe(P.skills[skill].xp);
   if (despues > antes) {
-    sfx.subir();
-    toast(`⬆ ¡${SKILLS[skill].nombre} nivel ${despues}! — ${tituloDe(skill)}`, 4500);
+    celebrar({ tipo: 'nivel', ico: SKILLS[skill].ico, titulo: `¡${SKILLS[skill].nombre} nivel ${despues}!`, texto: tituloDe(skill) });
   } else if (motivo) {
-    toast(`+${xp} XP ${SKILLS[skill].ico} ${motivo}`, 2200);
+    toast(`+${xp} XP ${SKILLS[skill].ico} ${motivo}`, 2200, 'xp');
   }
   pintarHUD();
   guardar();
@@ -63,7 +62,7 @@ function actualizarRacha() {
   r.dias = r.ultimo && diasEntre(r.ultimo, f) === 1 ? r.dias + 1 : 1;
   r.ultimo = f;
   r.mejor = Math.max(r.mejor, r.dias);
-  if (r.dias > 1) toast(`🔥 Racha de ${r.dias} días`);
+  if (r.dias > 1) toast(`🔥 Racha de ${r.dias} días`, 3400, 'mision');
 }
 export function rachaViva() {
   const r = P.racha;
@@ -114,28 +113,30 @@ export function misionesDeHoy() {
   return P.misiones.lista;
 }
 
+// ico: dibujo del logro · skill: senda (o null si es general) · prog: [actual, meta] para mostrar la barra
+const st = k => P.stats[k] || 0;
 const LOGROS = [
-  { id: 'hiragana', txt: 'Dominaste el hiragana', cond: () => kanaDominados('h') >= 46 },
-  { id: 'katakana', txt: 'Dominaste el katakana', cond: () => kanaDominados('k') >= 46 },
-  { id: 'racha7', txt: '7 días seguidos practicando', cond: () => P.racha.dias >= 7 },
-  { id: 'racha30', txt: '30 días seguidos', cond: () => P.racha.dias >= 30 },
-  { id: 'notas100', txt: '100 notas leídas', cond: () => (P.stats.nota_ok || 0) >= 100 },
-  { id: 'cancion5', txt: '5 canciones terminadas', cond: () => (P.stats.cancion_fin || 0) >= 5 },
-  { id: 'brew_perfecto', txt: 'Una extracción perfecta en el laboratorio', cond: () => (P.stats.brew_perfecto || 0) >= 1 },
-  { id: 'bitacora10', txt: '10 cafés reales en la bitácora', cond: () => (P.stats.bitacora || 0) >= 10 },
+  { id: 'hiragana', ico: 'あ', skill: 'jp', txt: 'Dominaste el hiragana', prog: () => [kanaDominados('h'), 46] },
+  { id: 'katakana', ico: 'ア', skill: 'jp', txt: 'Dominaste el katakana', prog: () => [kanaDominados('k'), 46] },
+  { id: 'cine1', ico: '🎬', skill: 'jp', txt: 'Terminaste tu primera función en el cine', prog: () => [st('cine_fin'), 1] },
+  { id: 'mazo50', ico: '⭐', skill: 'jp', txt: '50 palabras guardadas de videos', prog: () => [P.jp.mazo?.length || 0, 50] },
+  { id: 'notas100', ico: '🎼', skill: 'piano', txt: '100 notas leídas', prog: () => [st('nota_ok'), 100] },
+  { id: 'cancion5', ico: '🎹', skill: 'piano', txt: '5 canciones terminadas', prog: () => [st('cancion_fin'), 5] },
+  { id: 'brew_perfecto', ico: '🔬', skill: 'cafe', txt: 'Una extracción perfecta en el laboratorio', prog: () => [st('brew_perfecto'), 1] },
+  { id: 'bitacora10', ico: '📓', skill: 'cafe', txt: '10 cafés reales en la bitácora', prog: () => [st('bitacora'), 10] },
   // Academia de barismo: logros por habilidades reales, no por tiempo jugado
-  { id: 'esp_balanceado', txt: 'Un espresso balanceado y sin canalizar', cond: () => (P.stats.esp_ok || 0) >= 1 },
-  { id: 'carrera_espresso', txt: 'Completaste la carrera de espresso', cond: () => (P.stats.carrera_espresso || 0) >= 1 },
-  { id: 'diagnostico10', txt: '10 espressos bien diagnosticados', cond: () => (P.stats.diag_ok || 0) >= 10 },
-  { id: 'corazon', txt: 'Tu primer corazón de latte art', cond: () => (P.stats.latte_corazon || 0) >= 1 },
-  { id: 'rosetta', txt: 'Una rosetta aprobada', cond: () => (P.stats.latte_rosetta || 0) >= 1 },
-  { id: 'rush_limpio', txt: 'Un turno de Rush Hour sin perder clientes', cond: () => (P.stats.rush_limpio || 0) >= 1 },
-  { id: 'cientifico', txt: '5 experimentos A/B cambiando una sola variable', cond: () => (P.stats.ab_unavariable || 0) >= 5 },
-  { id: 'tostador', txt: 'Un blend aprobado por el tostador', cond: () => (P.stats.blend_ok || 0) >= 1 },
-  { id: 'cine1', txt: 'Terminaste tu primera función en el cine', cond: () => (P.stats.cine_fin || 0) >= 1 },
-  { id: 'mazo50', txt: '50 palabras guardadas de videos', cond: () => (P.jp.mazo?.length || 0) >= 50 },
-  { id: 'trinidad', txt: 'Las tres sendas en un mismo día', cond: () => { const h = P.historial[hoy()]; return h && h.jp > 0 && h.piano > 0 && h.cafe > 0; } },
-];
+  { id: 'esp_balanceado', ico: '☕', skill: 'cafe', txt: 'Un espresso balanceado y sin canalizar', prog: () => [st('esp_ok'), 1] },
+  { id: 'carrera_espresso', ico: '🏆', skill: 'cafe', txt: 'Completaste la carrera de espresso', prog: () => [st('carrera_espresso'), 1] },
+  { id: 'diagnostico10', ico: '🩺', skill: 'cafe', txt: '10 espressos bien diagnosticados', prog: () => [st('diag_ok'), 10] },
+  { id: 'corazon', ico: '🤍', skill: 'cafe', txt: 'Tu primer corazón de latte art', prog: () => [st('latte_corazon'), 1] },
+  { id: 'rosetta', ico: '🌿', skill: 'cafe', txt: 'Una rosetta aprobada', prog: () => [st('latte_rosetta'), 1] },
+  { id: 'rush_limpio', ico: '⏱️', skill: 'cafe', txt: 'Un turno de Rush Hour sin perder clientes', prog: () => [st('rush_limpio'), 1] },
+  { id: 'cientifico', ico: '🧪', skill: 'cafe', txt: '5 experimentos A/B cambiando una sola variable', prog: () => [st('ab_unavariable'), 5] },
+  { id: 'tostador', ico: '🌱', skill: 'cafe', txt: 'Un blend aprobado por el tostador', prog: () => [st('blend_ok'), 1] },
+  { id: 'racha7', ico: '🔥', skill: null, txt: '7 días seguidos practicando', prog: () => [P.racha.dias, 7] },
+  { id: 'racha30', ico: '🌋', skill: null, txt: '30 días seguidos', prog: () => [P.racha.dias, 30] },
+  { id: 'trinidad', ico: '⛩️', skill: null, txt: 'Las tres sendas en un mismo día', prog: () => { const h = P.historial[hoy()]; return [h ? ['jp', 'piano', 'cafe'].filter(k => h[k] > 0).length : 0, 3]; } },
+].map(l => ({ ...l, cond: () => { const [a, m] = l.prog(); return a >= m; } }));
 function kanaDominados(tipo) {
   return Object.entries(P.srs).filter(([k, v]) => k.startsWith(`kana:${tipo}:`) && v.c >= 3).length;
 }
@@ -147,15 +148,14 @@ export function evento(ev, n = 1) {
     m.prog = Math.min(m.meta, m.prog + n);
     if (m.prog >= m.meta) {
       m.hecha = true;
-      sfx.subir();
-      toast(`✅ Misión diaria cumplida: ${m.texto}`, 4500);
+      toast(`✅ Misión diaria cumplida: ${m.texto}`, 4500, 'mision');
       ganarXP(m.skill, 30);
     }
   }
   for (const l of LOGROS) {
     if (!P.logros.includes(l.id) && l.cond()) {
       P.logros.push(l.id);
-      toast(`🏅 Logro: ${l.txt}`, 5000);
+      celebrar({ tipo: 'logro', ico: l.ico || '🏅', titulo: 'Logro desbloqueado', texto: l.txt });
     }
   }
   guardar();
@@ -260,6 +260,14 @@ export async function sincronizar() {
   return false;
 }
 
+/** Reemplaza la partida por un respaldo exportado (devuelve false si el archivo no parece una partida). */
+export function importarPartida(datos) {
+  if (!datos || typeof datos !== 'object' || !datos.version || !datos.skills) return false;
+  P = fusionar(NUEVA(), datos);
+  guardar(true);
+  return true;
+}
+
 export function reiniciarPartida() {
   P = NUEVA();
   guardar(true);
@@ -278,4 +286,13 @@ export function pintarHUD() {
   }
   $('#hud-nivel').textContent = `Nv ${nivelTotal()}`;
   $('#hud-racha').textContent = `🔥 ${rachaViva()}`;
+  const ms = misionesDeHoy(), hechas = ms.filter(m => m.hecha).length;
+  const bm = $('#hud-misiones');
+  if (bm) {
+    bm.textContent = `✅ ${hechas}/${ms.length}`;
+    bm.classList.toggle('completo', hechas === ms.length);
+    bm.title = ms.map(m => `${m.hecha ? '✅' : '▫️'} ${m.texto} (${m.prog}/${m.meta})`).join('\n');
+  }
+  const perfil = $('#hud-perfil');
+  if (perfil) perfil.title = `${P.nombreRomaji || 'Tu casa'} — progreso, logros y opciones`;
 }

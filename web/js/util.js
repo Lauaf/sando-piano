@@ -56,10 +56,40 @@ export function diasEntre(a, b) {
   return Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 86400000);
 }
 
-export function toast(texto, ms = 3400) {
-  const t = el('div.toast', texto);
-  document.getElementById('toasts').append(t);
+/** Aviso corto arriba a la derecha de la pantalla del juego. tipo: info|xp|mision|logro|nivel */
+export function toast(texto, ms = 3400, tipo = 'info') {
+  const caja = document.getElementById('toasts');
+  const t = el('div.toast.' + tipo, { role: 'status', style: { animationDuration: ms + 'ms' } }, texto);
+  caja.append(t);
+  while (caja.children.length > 4) caja.firstChild.remove(); // que no se apilen infinitos
   setTimeout(() => t.remove(), ms);
+}
+
+// ---------- Celebraciones (subir de nivel, logros): un cartel grande que se va solo ----------
+const colaCelebrar = [];
+let celebrando = false;
+/** {ico, titulo, texto, tipo: 'nivel'|'logro'} — se muestran de a una. */
+export function celebrar(c) {
+  colaCelebrar.push(c);
+  if (!celebrando) siguienteCelebracion();
+}
+function siguienteCelebracion() {
+  const c = colaCelebrar.shift();
+  const raiz = document.getElementById('celebracion');
+  if (!c || !raiz) { celebrando = false; return; }
+  celebrando = true;
+  const chispas = Array.from({ length: 14 }, (_, i) => el('i.chispa', { style: { '--a': `${i * (360 / 14)}deg`, '--d': `${60 + (i % 3) * 22}px` } }));
+  raiz.className = 'cel-' + (c.tipo || 'nivel');
+  raiz.replaceChildren(el('div.cel-caja', chispas, el('div.cel-ico', c.ico), el('div.cel-tit', c.titulo), c.texto ? el('div.cel-txt', c.texto) : null));
+  (c.tipo === 'logro' ? sfx.logro : sfx.subir)();
+  const fuera = () => { raiz.className = 'oculto'; raiz.onclick = null; setTimeout(siguienteCelebracion, 200); };
+  const t = setTimeout(fuera, 2900);
+  raiz.onclick = () => { clearTimeout(t); fuera(); };
+}
+
+/** Simula una tecla (para la cruceta táctil y el mando): los manejadores de teclado ya existentes la atienden. */
+export function simularTecla(tipo, key, code = key) {
+  dispatchEvent(new KeyboardEvent(tipo, { key, code, bubbles: true, cancelable: true }));
 }
 
 // ---------- Sonidos (WebAudio, sin archivos) ----------
@@ -69,17 +99,17 @@ export function audio() {
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
-export const sonido = { activo: true };
+export const sonido = { activo: true, volumen: 1 }; // volumen: 0..1 (lo ajusta Opciones)
 
 function beep(freq, dur = 0.08, tipo = 'square', vol = 0.06, cuando = 0) {
-  if (!sonido.activo) return;
+  if (!sonido.activo || sonido.volumen <= 0) return;
   const a = audio();
   const t = a.currentTime + cuando;
   const o = a.createOscillator();
   const g = a.createGain();
   o.type = tipo;
   o.frequency.setValueAtTime(freq, t);
-  g.gain.setValueAtTime(vol, t);
+  g.gain.setValueAtTime(vol * sonido.volumen, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   o.connect(g).connect(a.destination);
   o.start(t);
@@ -95,6 +125,8 @@ export const sfx = {
   subir: () => [523, 659, 784, 1046, 1319].forEach((f, i) => beep(f, 0.12, 'square', 0.05, i * 0.09)),
   puerta: () => { beep(330, 0.06, 'triangle', 0.08); beep(262, 0.1, 'triangle', 0.08, 0.06); },
   paso: () => beep(90 + Math.random() * 20, 0.02, 'triangle', 0.03),
+  inicio: () => [392, 523, 659, 784, 659, 1046].forEach((f, i) => beep(f, i === 5 ? 0.3 : 0.1, 'square', 0.045, i * 0.085)),
+  logro: () => [784, 988, 1175, 1568].forEach((f, i) => beep(f, i === 3 ? 0.25 : 0.08, 'triangle', 0.07, i * 0.07)),
 };
 
 // ---------- Voz (TTS del navegador; Edge trae voces japonesas naturales) ----------

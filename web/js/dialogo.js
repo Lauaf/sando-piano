@@ -17,17 +17,22 @@ let opciones = [];
 let sel = 0;
 let cancelable = false;
 
+// velocidad del texto a máquina (Opciones): multiplica las pausas entre letras; 0 = aparece entero
+const VELOCIDAD = { lento: 1.7, normal: 1, rapido: 0.45, instantaneo: 0 };
+const pausa = () => VELOCIDAD[P.opciones?.texto] ?? 1;
+
 async function escribir(contenido) {
   escribiendo = true;
   saltar = false;
   caja.classList.add('escribiendo');
   nTexto.replaceChildren();
+  if (!pausa()) saltar = true;
   if (typeof contenido === 'string') {
     for (const ch of contenido) {
       if (saltar) { nTexto.textContent = contenido; break; }
       nTexto.textContent += ch;
       if (ch.trim()) sfx.letra();
-      await esperar(ch === '.' || ch === '…' || ch === '。' ? 90 : 22);
+      await esperar((ch === '.' || ch === '…' || ch === '。' ? 90 : 22) * pausa());
     }
   } else {
     // nodos (japonés con ruby): aparecen token por token
@@ -40,7 +45,7 @@ async function escribir(contenido) {
     });
     envolturas.forEach(h => { h.style.opacity = 0; });
     for (const h of envolturas) {
-      if (!saltar) { sfx.letra(); await esperar(25 * Math.max(1, h.textContent.length)); }
+      if (!saltar) { sfx.letra(); await esperar(25 * Math.max(1, h.textContent.length) * pausa()); }
       h.style.opacity = 1;
     }
   }
