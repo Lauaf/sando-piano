@@ -17,7 +17,7 @@ const NUEVA = () => ({
   historial: {},          // fecha -> {jp, piano, cafe} (xp ganada ese día)
   misiones: { fecha: null, lista: [] },
   srs: {},                // clave -> {c: caja, p: próxima fecha, a: aciertos, e: errores}
-  jp: { nivel: null, furigana: true, romaji: true, chat: [] },
+  jp: { nivel: null, furigana: true, romaji: true, chat: [], mazo: [] }, // mazo: palabras guardadas en el cine
   piano: { nivel: null, nombres: 'latino', practica: [] },
   cafe: { nivel: null, equipo: [], bitacora: [] },
   stats: {},              // contadores varios (eventos)
@@ -79,6 +79,8 @@ const POOL = {
     { ev: 'vocab_ok', meta: 15, texto: 'Acertá 15 palabras en el repaso' },
     { ev: 'chat_jp', meta: 5, texto: 'Mandale 5 mensajes en japonés a Haru-sensei' },
     { ev: 'vecino_jp', meta: 3, texto: 'Charlá con 3 vecinos del pueblo (en japonés)' },
+    { ev: 'cine_lineas', meta: 30, texto: 'Mirá 30 líneas de un video en el cine' },
+    { ev: 'cine_palabra', meta: 5, texto: 'Guardá 5 palabras nuevas de un video del cine' },
   ],
   piano: [
     { ev: 'nota_ok', meta: 25, texto: 'Leé 25 notas en el pentagrama' },
@@ -130,6 +132,8 @@ const LOGROS = [
   { id: 'rush_limpio', txt: 'Un turno de Rush Hour sin perder clientes', cond: () => (P.stats.rush_limpio || 0) >= 1 },
   { id: 'cientifico', txt: '5 experimentos A/B cambiando una sola variable', cond: () => (P.stats.ab_unavariable || 0) >= 5 },
   { id: 'tostador', txt: 'Un blend aprobado por el tostador', cond: () => (P.stats.blend_ok || 0) >= 1 },
+  { id: 'cine1', txt: 'Terminaste tu primera función en el cine', cond: () => (P.stats.cine_fin || 0) >= 1 },
+  { id: 'mazo50', txt: '50 palabras guardadas de videos', cond: () => (P.jp.mazo?.length || 0) >= 50 },
   { id: 'trinidad', txt: 'Las tres sendas en un mismo día', cond: () => { const h = P.historial[hoy()]; return h && h.jp > 0 && h.piano > 0 && h.cafe > 0; } },
 ];
 function kanaDominados(tipo) {

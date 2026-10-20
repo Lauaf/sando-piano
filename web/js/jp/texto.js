@@ -110,7 +110,7 @@ export function normalizar(toks) {
  * Renderiza tokens como spans clicables. opciones: {furigana, romaji (línea extra), escribir: cb por letra}
  * Devuelve {nodo, romajiNodo}.
  */
-export function renderTokens(toks, { furigana = true, romaji = false } = {}) {
+export function renderTokens(toks, { furigana = true, romaji = false, alGuardar = null } = {}) {
   const nodo = el('span.jp');
   for (const tok of toks) {
     const conInfo = tok.s && tok.s.trim();
@@ -121,7 +121,7 @@ export function renderTokens(toks, { furigana = true, romaji = false } = {}) {
       contenido = document.createTextNode(tok.t);
     }
     if (conInfo) {
-      const s = el('span.pal', { onclick: e => { e.stopPropagation(); mostrarGlobo(tok, e.currentTarget); } }, contenido);
+      const s = el('span.pal', { onclick: e => { e.stopPropagation(); mostrarGlobo(tok, e.currentTarget, alGuardar); } }, contenido);
       nodo.append(s);
     } else {
       nodo.append(contenido);
@@ -133,17 +133,26 @@ export function renderTokens(toks, { furigana = true, romaji = false } = {}) {
 }
 
 // ---------- globo de traducción ----------
-export function mostrarGlobo(tok, ancla) {
+/** alGuardar(tok): si viene, el globo ofrece guardar la palabra (devuelve true si ya estaba). */
+export function mostrarGlobo(tok, ancla, alGuardar = null) {
   const g = $('#globo');
   document.querySelectorAll('.pal.activa').forEach(x => x.classList.remove('activa'));
   ancla.classList.add('activa');
-  g.replaceChildren(
+  // replaceChildren escribe "null" para los null: se filtran
+  g.replaceChildren(...[
     el('div.g-pal', tok.t),
     tok.r && tok.r !== tok.t ? el('div.g-lect', tok.r) : null,
     el('div.g-lect', aRomaji(tok.r || tok.t)),
     el('div.g-sig', tok.s),
-    el('button.btn.chico', { onclick: e => { e.stopPropagation(); hablar(tok.r || tok.t); } }, '🔊 escuchar'),
-  );
+    tok.b ? el('div.g-nota', `forma de diccionario: ${tok.b}`) : null,
+    el('div.fila', { style: { gap: '6px' } },
+      el('button.btn.chico', { onclick: e => { e.stopPropagation(); hablar(tok.r || tok.t); } }, '🔊 escuchar'),
+      alGuardar ? el('button.btn.chico', { onclick: e => {
+        e.stopPropagation();
+        e.currentTarget.textContent = alGuardar(tok) ? '⭐ ya estaba en tu mazo' : '⭐ ¡guardada!';
+        e.currentTarget.disabled = true;
+      } }, '☆ guardar') : null),
+  ].filter(Boolean));
   g.classList.remove('oculto');
   const cont = $('#pantalla').getBoundingClientRect();
   const r = ancla.getBoundingClientRect();
