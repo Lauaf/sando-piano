@@ -1,12 +1,18 @@
 // Estado de la partida: XP por habilidad, niveles, racha, misiones diarias,
 // repaso espaciado (Leitner) y guardado (servidor + localStorage de respaldo).
-import { hoy, diasEntre, toast, celebrar, elegir, mezclar, $ } from './util.js';
+import { hoy, diasEntre, toast, celebrar, mezclar, $ } from './util.js';
 
 export const SKILLS = {
   jp: { nombre: 'Japonés', ico: 'あ', titulos: ['Turista', 'Aprendiz de kana', 'Lector de kana', 'Viajero', 'Conversador', 'Senpai', 'Sensei'] },
   piano: { nombre: 'Piano', ico: '♪', titulos: ['Oyente', 'Principiante', 'Aprendiz', 'Intérprete', 'Pianista', 'Concertista', 'Maestro'] },
   cafe: { nombre: 'Café', ico: '☕', titulos: ['Tomador de café', 'Aprendiz de barista', 'Barista', 'Barista experto', 'Catador', 'Tostador', 'Maestro cafetero'] },
 };
+
+// Esta app es una sola senda de Sandō: el resto de las habilidades no se muestra ni da misiones.
+export const SENDA = 'piano';
+for (const k of Object.keys(SKILLS)) if (k !== SENDA) delete SKILLS[k];
+const MISIONES_APP = ["nota_ok", "cancion_fin", "oido_ok", "practica_real"];
+const LOGROS_APP = ["notas100", "cancion5", "racha7", "racha30"];
 
 const NUEVA = () => ({
   version: 1,
@@ -35,7 +41,7 @@ export function tituloDe(skill) {
   const t = SKILLS[skill].titulos;
   return t[Math.min(t.length - 1, Math.floor((nivelDe(P.skills[skill].xp) - 1) / 2))];
 }
-export const nivelTotal = () => Object.keys(SKILLS).reduce((s, k) => s + nivelDe(P.skills[k].xp), 0) - 2;
+export const nivelTotal = () => Object.keys(SKILLS).reduce((s, k) => s + nivelDe(P.skills[k].xp), 0) - (Object.keys(SKILLS).length - 1);
 
 export function ganarXP(skill, xp, motivo = '') {
   if (!xp) return;
@@ -100,13 +106,11 @@ const POOL = {
 export function misionesDeHoy() {
   const f = hoy();
   if (P.misiones.fecha !== f) {
+    const tipo = ['n4', 'n3'].includes(P.jp.nivel) ? 'avanzado' : 'basico';
     P.misiones = {
       fecha: f,
-      lista: Object.entries(POOL).map(([skill, pool]) => {
-        const tipo = ['n4', 'n3'].includes(P.jp.nivel) ? 'avanzado' : 'basico';
-        const m = elegir(pool.filter(x => !x.solo || x.solo === tipo));
-        return { skill, ev: m.ev, meta: m.meta, texto: m.texto, prog: 0, hecha: false };
-      }),
+      lista: mezclar(POOL[SENDA].filter(x => MISIONES_APP.includes(x.ev) && (!x.solo || x.solo === tipo))).slice(0, 3)
+        .map(m => ({ skill: SENDA, ev: m.ev, meta: m.meta, texto: m.texto, prog: 0, hecha: false })),
     };
     guardar();
   }
@@ -136,7 +140,7 @@ const LOGROS = [
   { id: 'racha7', ico: '🔥', skill: null, txt: '7 días seguidos practicando', prog: () => [P.racha.dias, 7] },
   { id: 'racha30', ico: '🌋', skill: null, txt: '30 días seguidos', prog: () => [P.racha.dias, 30] },
   { id: 'trinidad', ico: '⛩️', skill: null, txt: 'Las tres sendas en un mismo día', prog: () => { const h = P.historial[hoy()]; return [h ? ['jp', 'piano', 'cafe'].filter(k => h[k] > 0).length : 0, 3]; } },
-].map(l => ({ ...l, cond: () => { const [a, m] = l.prog(); return a >= m; } }));
+].map(l => ({ ...l, cond: () => { const [a, m] = l.prog(); return a >= m; } })).filter(l => LOGROS_APP.includes(l.id));
 function kanaDominados(tipo) {
   return Object.entries(P.srs).filter(([k, v]) => k.startsWith(`kana:${tipo}:`) && v.c >= 3).length;
 }

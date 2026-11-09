@@ -5,7 +5,7 @@ import { ocultarGlobo } from './jp/texto.js';
 const raiz = $('#actividad');
 const pila = [];      // [{titulo, sub, render, limpiar}]
 let alCerrarTodo = null;
-export const actividad = { abierta: false };
+export const actividad = { abierta: false, fija: false }; // fija: la primera pantalla no se cierra (es la app)
 
 function montar() {
   const top = pila[pila.length - 1];
@@ -13,7 +13,7 @@ function montar() {
   ocultarGlobo();
   const cuerpo = el('div.act-cuerpo');
   const barra = el('div.act-barra',
-    el('button.btn.volver', { onclick: volver, title: 'Volver (Esc)' }, pila.length > 1 ? '◀ Volver' : '✕ Salir'),
+    el('button.btn.volver' + (pila.length > 1 ? '' : '.raiz'), { onclick: volver, title: 'Volver (Esc)' }, pila.length > 1 ? '◀ Volver' : '✕ Salir'),
     el('h2', top.titulo, top.sub ? el('small', top.sub) : null),
     top.extra || null);
   raiz.replaceChildren(barra, cuerpo);
@@ -48,11 +48,15 @@ export function ir(titulo, render, { sub, extra } = {}) {
 }
 
 export function volver() {
+  if (actividad.fija && pila.length <= 1) return;
   const p = pila.pop();
   p?.limpiar?.();
   if (pila.length) { sfx.cursor(); montar(); return; }
   cerrar();
 }
+
+/** Título de la pantalla que se ve ahora. */
+export const tituloActual = () => pila[pila.length - 1]?.titulo;
 
 export function cerrar() {
   while (pila.length) { const p = pila.pop(); p.limpiar?.(); }

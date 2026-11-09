@@ -549,3 +549,9 @@ body.con-tactil #ayuda { display: none; }
 }
 .tit-senda.solo { grid-template-columns: auto auto; }
 .tit-senda.solo .tit-senda-ico { grid-row: auto; }
+
+/* ---------- App independiente (una sola senda, sin el pueblo) ---------- */
+body.app #pantalla { background: radial-gradient(circle at 50% 0%, #2a2140, #14111f 70%); }
+body.app .act-barra .volver.raiz, body.app .sala-salir { display: none; }
+body.app .hud-skills .barra { width: 180px; }
+body.app #hud-titulo { letter-spacing: 1px; }

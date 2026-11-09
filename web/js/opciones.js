@@ -1,10 +1,8 @@
-// ⚙️ Opciones: sonido, velocidad del texto, pantalla, controles táctiles y respaldo de la partida.
-// Se abre desde la pantalla de título, el menú rápido y la casa; los cambios se aplican al instante.
+// ⚙️ Opciones: sonido, velocidad del texto, pantalla y respaldo de la partida. Los cambios se aplican al instante.
 import { el, hoy, sonido, sfx, toast } from './util.js';
 import { P, guardar, reiniciarPartida, importarPartida } from './progreso.js';
-import { abrir } from './actividad.js';
 
-/** Aplica las opciones guardadas y avisa al resto del juego (tamaño de pantalla, controles táctiles). */
+/** Aplica las opciones guardadas y avisa al resto de la app (tamaño de pantalla). */
 export function aplicarOpciones() {
   const o = P.opciones;
   sonido.activo = o.sonido !== false;
@@ -16,11 +14,6 @@ function cambiar(clave, valor) {
   P.opciones[clave] = valor;
   aplicarOpciones();
   guardar();
-}
-
-/** Abre las opciones como ventana propia (desde el título o el menú rápido). */
-export function abrirOpciones(alCerrar) {
-  abrir('casa', '⚙️ Opciones', pantallaOpciones, { sub: 'se guardan solas', alCerrar });
 }
 
 /** Grupo de botones donde se elige uno (aria-pressed para lectores de pantalla). */
@@ -64,13 +57,11 @@ export function pantallaOpciones(c, ctx) {
     el('div.panel.op-grupo', el('div.op-cab', '💬 Diálogos'),
       fila('Velocidad del texto', 'Con Z / Enter siempre podés saltar al final de la línea.',
         selector([['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido'], ['instantaneo', 'Instantáneo']], o.texto || 'normal', v => cambiar('texto', v)))),
-    el('div.panel.op-grupo', el('div.op-cab', '🖥️ Pantalla y controles'),
+    el('div.panel.op-grupo', el('div.op-cab', '🖥️ Pantalla'),
       fila('Píxeles perfectos', 'Escala entera: el pixel art se ve más nítido, la pantalla queda un poco más chica.',
-        selector([[false, 'Ajustar a la ventana'], [true, 'Escala entera']], !!o.escalaEntera, v => cambiar('escalaEntera', v))),
-      fila('Controles táctiles', 'Cruceta y botones A / B en pantalla para jugar desde el celular o la tablet.',
-        selector([['auto', 'Automático'], ['si', 'Siempre'], ['no', 'Nunca']], o.tactil || 'auto', v => cambiar('tactil', v)))),
+        selector([[false, 'Ajustar a la ventana'], [true, 'Escala entera']], !!o.escalaEntera, v => cambiar('escalaEntera', v)))),
     el('div.panel.op-grupo', el('div.op-cab', '💾 Partida'),
-      el('div.suave', 'Se guarda sola en la carpeta datos/ del juego (partida.json, con una copia por día) y en este navegador.'),
+      el('div.suave', 'Se guarda sola en la carpeta datos/ de la app (partida.json, con una copia por día) y en este navegador.'),
       el('div.fila',
         el('button.btn', { onclick: () => {
           const a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(P, null, 1)], { type: 'application/json' })), download: `sando-${hoy()}.json` });

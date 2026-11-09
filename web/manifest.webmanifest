@@ -1,11 +1,17 @@
 {
-  "name": "三道 Sandō",
-  "short_name": "Sandō",
-  "description": "Un pueblo pixel art para aprender japonés, practicar piano y preparar café.",
+  "name": "音楽堂 Piano · Sandō",
+  "short_name": "音楽堂",
+  "description": "Practicar piano: lectura de notas, canciones con digitación, oído, acordes y registro de práctica real (teclado, MIDI o micrófono).",
   "lang": "es",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#14111f",
   "theme_color": "#14111f",
-  "icons": [{ "src": "icono.png", "sizes": "256x256", "type": "image/png" }]
+  "icons": [
+    {
+      "src": "icono.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
 }

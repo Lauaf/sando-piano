@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Sandō: un pueblo pixel art para aprender japonés, practicar piano y preparar café.">
+<meta name="description" content="Practicar piano: lectura de notas, canciones con digitación, oído, acordes y registro de práctica real (teclado, MIDI o micrófono).">
 <meta name="theme-color" content="#14111f">
-<title>三道 Sandō</title>
+<title>音楽堂 Piano · Sandō</title>
 <link rel="icon" href="icono.png">
 <link rel="apple-touch-icon" href="icono.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -13,26 +13,22 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
 <link rel="stylesheet" href="estilo.css">
 </head>
-<body>
+<body class="app">
 <div id="consola">
   <header id="hud">
-    <button id="hud-perfil" class="hud-nombre"><span id="hud-titulo">三道</span><span id="hud-nivel">Nv 1</span></button>
+    <button id="hud-perfil" class="hud-nombre" title="Mi progreso"><span id="hud-titulo">音楽堂</span><span id="hud-nivel">Nv 1</span></button>
     <div class="hud-skills">
-      <div class="skill" data-skill="jp"><span class="ico">あ</span><div class="barra"><i></i></div><b>1</b></div>
       <div class="skill" data-skill="piano"><span class="ico">♪</span><div class="barra"><i></i></div><b>1</b></div>
-      <div class="skill" data-skill="cafe"><span class="ico">☕</span><div class="barra"><i></i></div><b>1</b></div>
     </div>
     <div class="hud-der">
       <button id="hud-misiones" title="Misiones de hoy">✅ 0/3</button>
       <span id="hud-racha" title="Racha de días practicando">🔥 0</span>
       <span id="hud-ia" title="Estado de la IA local">IA ···</span>
-      <button id="btn-menu" title="Mapa (M / Esc)" aria-label="Abrir el mapa">☰</button>
+      <button id="btn-menu" title="Opciones" aria-label="Opciones">⚙</button>
     </div>
   </header>
 
   <main id="pantalla">
-    <canvas id="lienzo" width="960" height="640"></canvas>
-    <div id="cartel-lugar" class="oculto"></div>
     <div id="dialogo" class="oculto">
       <div id="dialogo-nombre"></div>
       <div id="dialogo-texto"></div>
@@ -42,16 +38,13 @@
     </div>
     <div id="globo" class="oculto"></div>
     <section id="actividad" class="oculto"></section>
-    <div id="menu-rapido" class="oculto"></div>
     <div id="fundido"></div>
-    <div id="titulo" class="oculto"></div>
   </main>
-  <div id="tactil" class="oculto"></div>
 
-  <footer id="ayuda"></footer>
+  <footer id="ayuda"><span><kbd>flechas</kbd> moverse entre opciones</span> <span><kbd>Enter</kbd> elegir</span> <span><kbd>Esc</kbd>/<kbd>X</kbd> volver</span> <span>teclado de la compu: <kbd>A</kbd>=Do <kbd>W</kbd>=Do# <kbd>S</kbd>=Re…</span></footer>
 </div>
 <div id="toasts" aria-live="polite"></div>
 <div id="celebracion" class="oculto" aria-live="assertive"></div>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
