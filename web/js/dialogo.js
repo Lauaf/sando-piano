@@ -84,7 +84,7 @@ export async function decir(args) {
   if (romajiNodo) nTexto.append(romajiNodo);
   if (args.trad) {
     nTrad.replaceChildren(
-      args.tradOculta ? el('span', { style: { cursor: 'pointer' }, onclick: e => { e.stopPropagation(); e.target.textContent = args.trad; } }, '👁 ver traducción (T)') : args.trad);
+      args.tradOculta ? el('span', { style: { cursor: 'pointer' }, onclick: e => { e.stopPropagation(); e.target.textContent = args.trad; } }, 'ver traducción (T)') : args.trad);
     nTrad.classList.remove('oculto');
   }
   if (opciones.length) {

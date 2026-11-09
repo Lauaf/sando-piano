@@ -4,11 +4,11 @@ La sala de música de Rin: practicar piano con el teclado de la compu, un piano 
 
 | | |
 |---|---|
-| 🎼 **Lectura de notas** | Las notas avanzan por el pentagrama: tocalas antes de que lleguen. Clave de sol y de fa. |
-| 🎹 **Canciones y tarea** | Clásicas incluidas y las tuyas (YouTube, partituras, MuseScore), con digitación, manos separadas y bucle. |
-| 👂 **Oído** | Repetí notas, reconocé intervalos y acordes mayores/menores. |
-| 🎶 **Acordes** | Do, Fa, Sol, Lam… y las progresiones que suenan en todas partes. |
-| ⏱️ **Práctica real** | Metrónomo, cronómetro y registro de lo que practicás en tu piano. |
+| **Lectura de notas** | Las notas avanzan por el pentagrama: tocalas antes de que lleguen. Clave de sol y de fa. |
+| **Canciones y tarea** | Clásicas incluidas y las tuyas (YouTube, partituras, MuseScore), con digitación, manos separadas y bucle. |
+| **Oído** | Repetí notas, reconocé intervalos y acordes mayores/menores. |
+| **Acordes** | Do, Fa, Sol, Lam… y las progresiones que suenan en todas partes. |
+| **Práctica real** | Metrónomo, cronómetro y registro de lo que practicás en tu piano. |
 
 Teclado de la compu: `A`=Do, `W`=Do#, `S`=Re, `E`=Re#, `D`=Mi, `F`=Fa…
 
@@ -40,7 +40,7 @@ Sin ese entorno la sala funciona igual con las canciones incluidas.
 
 ## Partida y respaldo
 
-El progreso (nivel, racha, misiones del día, logros) se guarda solo en `datos/partida.json` (con una copia por día) y en el navegador. Desde **⚙ Opciones** podés exportar un respaldo y restaurarlo.
+El progreso (nivel, racha, misiones del día, logros) se guarda solo en `datos/partida.json` (con una copia por día) y en el navegador. Desde **Opciones** podés exportar un respaldo y restaurarlo.
 
 Como usa el mismo formato que [Sandō](https://github.com/Lauaf/Sando), podés exportar tu partida desde Sandō y restaurarla acá para seguir con el mismo progreso.
 

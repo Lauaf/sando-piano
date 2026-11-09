@@ -50,6 +50,7 @@ button, input, select, textarea { font-family: inherit; }
 #btn-menu { background: var(--marco); color: var(--crema); border: 0; border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 16px; }
 #btn-menu:hover, #hud-misiones:hover { background: #342a52; }
 #hud-misiones { background: var(--marco); color: var(--crema2); border: 0; border-radius: 10px; padding: 2px 9px; cursor: pointer; font: inherit; font-size: 13px; }
+#hud-racha { background: var(--marco); color: var(--crema2); border-radius: 10px; padding: 2px 9px; font-size: 13px; }
 #hud-misiones.completo { color: #9ff0c0; box-shadow: inset 0 0 0 1px #4caf6a88; }
 
 /* ---------- Pantalla ---------- */
@@ -111,7 +112,6 @@ ruby rt { font-size: .45em; color: #8b6fa8; }
 .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--px) * 62), 1fr)); gap: calc(var(--px) * 3); }
 .tarjeta { background: #ffffff0d; border: 2px solid #ffffff14; border-radius: 10px; padding: calc(var(--px) * 3.5); cursor: pointer; display: flex; flex-direction: column; gap: 6px; text-align: left; color: inherit; font-size: inherit; }
 .tarjeta:hover:not(.bloq) { border-color: var(--acento); background: #ffffff16; }
-.tarjeta .t-ico { font-size: 1.8em; }
 .tarjeta .t-tit { font-size: 1.05em; }
 .tarjeta .t-desc { font-size: .7em; color: #b8aed3; line-height: 1.35; }
 .tarjeta.bloq { opacity: .45; cursor: not-allowed; }
@@ -202,7 +202,7 @@ table.tabla { border-collapse: collapse; width: 100%; font-size: .8em; }
   .skill .ico { width: 20px; height: 20px; font-size: 12px; }
   .hud-der { gap: 6px; }
   #hud-ia { display: none; }
-  #hud-misiones { padding: 2px 6px; }
+  #hud-misiones, #hud-racha { padding: 2px 6px; }
 }
 
 /* partitura (Verovio) */
@@ -220,7 +220,7 @@ table.tabla { border-collapse: collapse; width: 100%; font-size: .8em; }
 /* ---------- Academia de barismo (minijuegos del kissaten) ---------- */
 .ac-h3 { margin: calc(var(--px) * 1.5) 0 0; font-weight: normal; font-size: 1.05em; color: var(--oro); flex: 1; }
 .ac-seccion { display: flex; flex-direction: column; gap: calc(var(--px) * 2.5); }
-.ac-modulo .t-ico { font-size: 1.6em; flex: 1; }
+.ac-num { align-self: flex-start; min-width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 50%; background: #0005; color: var(--oro); font-size: .8em; }
 .ac-modulo .hp { height: calc(var(--px) * 1.6); }
 .ac-recs { display: flex; flex-direction: column; gap: 6px; }
 .ac-rec { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; text-align: left; background: #f2c14e14; border: 2px dashed #f2c14e55; border-radius: 10px; padding: .4em .8em; color: inherit; font: inherit; font-size: .85em; cursor: pointer; }
@@ -291,11 +291,14 @@ table.tabla { border-collapse: collapse; width: 100%; font-size: .8em; }
 .ac-prop { display: flex; height: calc(var(--px) * 6); min-height: 20px; border-radius: 6px; overflow: hidden; background: #0004; font-size: .7em; }
 .ac-prop > div { display: grid; place-items: center; color: #241a2e; transition: width .25s; white-space: nowrap; overflow: hidden; }
 .ac-fantasma { position: fixed; z-index: 200; width: 56px; height: 56px; display: grid; place-items: center; font-size: 40px; pointer-events: none; transition: transform .12s; filter: drop-shadow(0 6px 8px #0008); }
+/* jarra o grano que se arrastra, y la muestra de cada líquido: un círculo de su color */
+.ac-fantasma i, .ac-fuente .ico i { display: block; width: 36px; height: 36px; border-radius: 50%; border: 3px solid #241a2e; box-shadow: inset 0 -6px 0 #0003, inset 0 4px 0 #fff3; }
+.muestra { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #0006; flex: none; }
 .ac-fantasma.vierte { transform: rotate(-40deg); }
 .ac-chorro { position: fixed; z-index: 199; width: 6px; border-radius: 3px; pointer-events: none; display: none; opacity: .9; }
 .ac-fuentes { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--px) * 26), 1fr)); gap: 8px; }
 .ac-fuente { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; background: #ffffff0d; border: 2px solid #ffffff1c; border-radius: 12px; cursor: grab; color: inherit; font: inherit; font-size: .8em; user-select: none; }
-.ac-fuente .ico { font-size: 2em; }
+.ac-fuente .ico { display: grid; place-items: center; min-height: 42px; }
 .ac-fuente:hover:not(:disabled) { border-color: var(--acento); }
 .ac-fuente:active { cursor: grabbing; }
 .ac-fuente:disabled { opacity: .4; cursor: not-allowed; }

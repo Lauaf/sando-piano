@@ -32,10 +32,10 @@ export function biblioteca(c, ctx) {
   P.piano.modoCancion ??= 'aprender';
   const zonaPropias = el('div', el('div.suave', 'Cargando tus canciones…'));
   c.append(
-    el('div.chips', [['aprender', '🐢 Aprender (te espera)'], ['ritmo', '🥁 Con ritmo'], ['escuchar', '👂 Escuchar']].map(([v, t]) =>
+    el('div.chips', [['aprender', 'Aprender (te espera)'], ['ritmo', 'Con ritmo'], ['escuchar', 'Escuchar']].map(([v, t]) =>
       el('button.chip' + (P.piano.modoCancion === v ? '.sel' : ''), { onclick: () => { P.piano.modoCancion = v; guardar(); ctx.rehacer(); } }, t))),
     zonaPropias,
-    el('div', { style: { marginTop: '6px' } }, '🎼 Clásicas para empezar'),
+    el('div', { style: { marginTop: '6px' } }, 'Clásicas para empezar'),
     el('div.rejilla', CANCIONES.map(s => {
       const mejor = P.piano.mejores[s.id];
       return el('button.tarjeta', { onclick: () => ctx.ir(s.tit, (cc, cx) => reproducir(cc, cx, clasica(s))) },
@@ -45,22 +45,21 @@ export function biblioteca(c, ctx) {
   api('/api/canciones').then(lista => {
     const tareas = lista.filter(x => x.tarea?.activa);
     const otras = lista.filter(x => !x.tarea?.activa);
-    const ICO = { youtube: '▶️', audio: '🎧', partitura: '📄', musicxml: '🎼', midi: '🎹' };
-    const tarjeta = x => {
+      const tarjeta = x => {
       const min = Math.round(P.piano.minutos?.[x.id] || 0);
       const mejor = P.piano.mejores[x.id];
       return el('button.tarjeta', { onclick: async () => { try { const s = await propia(x.id); ctx.ir(s.tit, (cc, cx) => reproducir(cc, cx, s)); } catch (e) { toast(`No pude abrirla: ${e.message}`); } } },
-        el('div.t-tit', `${ICO[x.fuente] || '🎵'} ${x.titulo}`),
-        x.tarea?.activa ? el('div.t-desc', `📝 ${x.tarea.texto || 'tarea'}${x.tarea.fecha ? ` · para el ${x.tarea.fecha.slice(8)}/${x.tarea.fecha.slice(5, 7)}` : ''}`) : null,
+        el('div.t-tit', x.titulo),
+        x.tarea?.activa ? el('div.t-desc', `${x.tarea.texto || 'tarea'}${x.tarea.fecha ? ` · para el ${x.tarea.fecha.slice(8)}/${x.tarea.fecha.slice(5, 7)}` : ''}`) : null,
         el('div.t-tag', `${x.notas} notas${mejor ? ` · mejor ${mejor}%` : ''}${min ? ` · ${min} min` : ''}${x.aproximada ? ' · transcripción automática' : ''}`));
     };
     zonaPropias.replaceChildren(
-      tareas.length ? el('div', '📝 Tarea de piano') : null,
+      tareas.length ? el('div', 'Tarea de piano') : null,
       tareas.length ? el('div.rejilla', tareas.map(tarjeta)) : null,
-      el('div', { style: { marginTop: '6px' } }, '🎵 Mis canciones'),
+      el('div', { style: { marginTop: '6px' } }, 'Mis canciones'),
       el('div.rejilla',
         el('button.tarjeta', { onclick: () => ctx.ir('Agregar canción', agregar) },
-          el('div.t-ico', '➕'), el('div.t-tit', 'Agregar canción'), el('div.t-desc', 'Link de YouTube, audio, partitura (PDF/foto) o archivo de MuseScore / MIDI.')),
+          el('div.t-tit', 'Agregar canción'), el('div.t-desc', 'Link de YouTube, audio, partitura (PDF/foto) o archivo de MuseScore / MIDI.')),
         ...otras.map(tarjeta)));
   }).catch(() => zonaPropias.replaceChildren(el('div.suave', 'No pude leer tus canciones (¿está corriendo el servidor?).')));
 }
@@ -72,7 +71,7 @@ function agregar(c, ctx) {
   const archivo = el('input', { type: 'file', accept: '.mid,.midi,.musicxml,.xml,.mxl,.pdf,.png,.jpg,.jpeg,.webp,.mp3,.wav,.m4a,.ogg,.flac', style: { display: 'none' } });
   const estado = el('div');
   const zona = el('div.panel', { style: { textAlign: 'center', borderStyle: 'dashed', cursor: 'pointer', padding: '1.2em' } },
-    '📄 Arrastrá acá una partitura (PDF, foto), un archivo MuseScore/MusicXML/MIDI o un audio', el('div.suave', 'o hacé clic para elegirlo'));
+    'Arrastrá acá una partitura (PDF, foto), un archivo MuseScore/MusicXML/MIDI o un audio', el('div.suave', 'o hacé clic para elegirlo'));
   for (const i of [url, titulo]) i.addEventListener('keydown', e => e.stopPropagation());
   zona.onclick = () => archivo.click();
   zona.ondragover = e => { e.preventDefault(); zona.style.borderColor = 'var(--acento)'; };
@@ -115,15 +114,15 @@ function agregar(c, ctx) {
   }
   c.append(
     el('div.panel',
-      el('div', '▶️ Desde YouTube (o cualquier link de audio/video)'),
+      el('div', '▶ Desde YouTube (o cualquier link de audio/video)'),
       el('div.fila', { style: { marginTop: '6px' } }, url, el('button.btn.prim', { onclick: () => url.value.trim() && enviar({ url: url.value.trim() }) }, 'Convertir'))),
     zona, archivo,
     el('div.fila', titulo),
     estado,
     el('div.panel.suave', { style: { fontSize: '.78em', lineHeight: 1.6 } },
-      '💡 Lo más fiel para la tarea: pedile a tu profe el archivo de MuseScore (o bajalo de musescore.com) y exportalo como MusicXML o MIDI: trae las dos manos, los compases y la digitación escrita.', el('br'),
-      '📄 Las partituras escaneadas y las fotos se leen con visión automática: funcionan con piezas simples y fotos derechas y nítidas, pero pueden tener errores.', el('br'),
-      '🎧 YouTube y los audios se transcriben "de oído" (como un dictado): sale bien la melodía y aproximado el resto. Usá 👂 Escuchar para comparar y el tempo para ir lento.'));
+      'Lo más fiel para la tarea: pedile a tu profe el archivo de MuseScore (o bajalo de musescore.com) y exportalo como MusicXML o MIDI: trae las dos manos, los compases y la digitación escrita.', el('br'),
+      'Las partituras escaneadas y las fotos se leen con visión automática: funcionan con piezas simples y fotos derechas y nítidas, pero pueden tener errores.', el('br'),
+      'YouTube y los audios se transcriben "de oído" (como un dictado): sale bien la melodía y aproximado el resto. Usá el modo Escuchar para comparar y el tempo para ir lento.'));
 }
 
 // ---------- Tarea ----------
@@ -141,13 +140,13 @@ function editorTarea(c, ctx, s, alGuardar) {
       el('button.btn.prim', { onclick: async () => {
         s.tarea = { activa: true, texto: texto.value.trim(), fecha: fecha.value, desde: +desde.value || null, hasta: +hasta.value || null };
         await api('/api/cancion', { id: s.id, tarea: s.tarea });
-        toast('📝 Tarea guardada'); alGuardar?.(); ctx.volver();
-      } }, '💾 Guardar tarea'),
+        toast('Tarea guardada'); alGuardar?.(); ctx.volver();
+      } }, 'Guardar tarea'),
       t.activa ? el('button.btn', { onclick: async () => {
         s.tarea = { ...t, activa: false, terminada: hoy() };
         await api('/api/cancion', { id: s.id, tarea: s.tarea });
-        sfx.subir(); toast('✅ ¡Tarea cumplida!'); ganarXP('piano', 25, 'tarea cumplida'); alGuardar?.(); ctx.volver();
-      } }, '✅ Ya la cumplí') : null));
+        sfx.subir(); toast('¡Tarea cumplida!'); ganarXP('piano', 25, 'tarea cumplida'); alGuardar?.(); ctx.volver();
+      } }, 'Ya la cumplí') : null));
 }
 
 // ---------- Reproductor ----------
@@ -200,19 +199,19 @@ export function reproducir(c, ctx, s) {
   const bHasta = el('input.entrada', { type: 'number', min: 1, max: totalCompases, value: aj.bucle?.[1] || Math.min(4, totalCompases), style: { width: '4em', padding: '.1em .3em' } });
   for (const i of [bDesde, bHasta]) i.addEventListener('keydown', e => e.stopPropagation());
   controles.append(...[
-    chips([['partitura', '🎼 Partitura'], ['cascada', '🎹 Cascada']], aj.vista, v => { aj.vista = v; }),
-    chips([['aprender', '🐢'], ['ritmo', '🥁'], ['escuchar', '👂']], modo, v => { P.piano.modoCancion = v; }),
+    chips([['partitura', 'Partitura'], ['cascada', 'Cascada']], aj.vista, v => { aj.vista = v; }),
+    chips([['aprender', 'Aprender'], ['ritmo', 'Ritmo'], ['escuchar', 'Escuchar']], modo, v => { P.piano.modoCancion = v; }),
     hayDos ? chips([['d', 'Mano der.'], ['i', 'Mano izq.'], ['ambas', 'Ambas']], aj.manos, v => { aj.manos = v; }) : null,
     el('label', 'Tempo ', tempo, ' ', vTempo),
     el('label', el('input', { type: 'checkbox', checked: !!aj.bucle, onchange: e => { aj.bucle = e.target.checked ? [+bDesde.value || 1, Math.max(+bDesde.value || 1, +bHasta.value || 1)] : null; guardar(); ctx.rehacer(); } }),
-      ' 🔁 compases ', bDesde, '–', bHasta, el('span.suave', ` de ${totalCompases}`)),
+      ' Bucle: compases ', bDesde, '–', bHasta, el('span.suave', ` de ${totalCompases}`)),
     hayDos && aj.manos !== 'ambas' ? el('label', el('input', { type: 'checkbox', checked: aj.acompanar, onchange: e => { aj.acompanar = e.target.checked; guardar(); } }), ' la otra mano suena') : null,
-    el('button.btn.chico', { onclick: e => { editando = !editando; e.target.classList.toggle('prim', editando); pintarInfo(); } }, '✏️ dedos'),
-    s.propia ? el('button.btn.chico', { onclick: () => ctx.ir('📝 Tarea', (cc, cx) => editorTarea(cc, cx, s)) }, s.tarea?.activa ? '📝 Tarea' : '📝 Marcar como tarea') : null,
+    el('button.btn.chico', { onclick: e => { editando = !editando; e.target.classList.toggle('prim', editando); pintarInfo(); } }, 'Editar dedos'),
+    s.propia ? el('button.btn.chico', { onclick: () => ctx.ir('Tarea', (cc, cx) => editorTarea(cc, cx, s)) }, s.tarea?.activa ? 'Tarea' : 'Marcar como tarea') : null,
     s.propia ? el('button.btn.chico', { onclick: async e => {
       if (!e.target.dataset.seguro) { e.target.dataset.seguro = 1; e.target.textContent = '¿Borrar? clic otra vez'; return; }
       await api('/api/cancion_borrar', { id: s.id }); toast('Canción borrada'); ctx.volver();
-    } }, '🗑️') : null].filter(Boolean));
+    } }, 'Borrar') : null].filter(Boolean));
   for (const i of [bDesde, bHasta]) i.onchange = () => { if (aj.bucle) { aj.bucle = [+bDesde.value || 1, Math.max(+bDesde.value || 1, +bHasta.value || 1)]; guardar(); ctx.rehacer(); } };
 
   function pintarInfo() {
@@ -223,8 +222,8 @@ export function reproducir(c, ctx, s) {
       modo !== 'escuchar' ? el('span.suave', `errores ${errores}`) : '',
       aj.bucle ? el('span.suave', `vueltas ${vueltas}`) : '',
       s.aproximada ? el('span.suave', '· transcripción automática: puede tener errores') : '',
-      editando ? el('span.ok', '✏️ Clic en una nota: cambia el dedo (1→5) · clic derecho: la borra · rueda: mover') : !empezado ? el('span.ok', 'Tocá cualquier nota o Espacio para empezar') : '',
-      sucio ? el('button.btn.chico.prim', { onclick: guardarDedos }, '💾 Guardar cambios') : '');
+      editando ? el('span.ok', 'Clic en una nota: cambia el dedo (1→5) · clic derecho: la borra · rueda: mover') : !empezado ? el('span.ok', 'Tocá cualquier nota o Espacio para empezar') : '',
+      sucio ? el('button.btn.chico.prim', { onclick: guardarDedos }, 'Guardar cambios') : '');
   }
   async function guardarDedos() {
     if (s.propia) await api('/api/cancion', { id: s.id, notas: notas.map(({ m, t, d, mano, dedo }) => ({ m, t, d, mano, dedo })) });
@@ -320,7 +319,7 @@ export function reproducir(c, ctx, s) {
         toast(`Dedo ${n.dedo} para ${nn(n.m)} (se ve en la partitura al guardar)`, 1500);
       });
     } catch (e) {
-      hoja.replaceChildren(el('div.no', { style: { padding: '1em' } }, `No pude dibujar la partitura (${e.message}). Probá la vista 🎹 Cascada.`));
+      hoja.replaceChildren(el('div.no', { style: { padding: '1em' } }, `No pude dibujar la partitura (${e.message}). Probá la vista Cascada.`));
     }
   }
   function pintarPartitura() {
@@ -470,8 +469,8 @@ export function reproducir(c, ctx, s) {
     info.replaceChildren(
       el('span.mediano', modo === 'escuchar' ? '¡Ahora te toca!' : `${pct}% ${pct >= 95 ? '★★★' : pct >= 80 ? '★★' : pct >= 60 ? '★' : ''}`),
       el('button.btn.prim', { onclick: () => ctx.rehacer() }, 'Otra vez'),
-      modo === 'aprender' && pct >= 85 ? el('button.btn', { onclick: () => { P.piano.modoCancion = 'ritmo'; ctx.rehacer(); } }, 'Probar con ritmo 🥁') : '',
-      modo === 'escuchar' ? el('button.btn', { onclick: () => { P.piano.modoCancion = 'aprender'; ctx.rehacer(); } }, 'Aprenderla 🐢') : '');
+      modo === 'aprender' && pct >= 85 ? el('button.btn', { onclick: () => { P.piano.modoCancion = 'ritmo'; ctx.rehacer(); } }, 'Probar con ritmo') : '',
+      modo === 'escuchar' ? el('button.btn', { onclick: () => { P.piano.modoCancion = 'aprender'; ctx.rehacer(); } }, 'Aprenderla') : '');
   }
 
   pintarInfo();

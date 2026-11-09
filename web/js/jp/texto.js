@@ -146,10 +146,10 @@ export function mostrarGlobo(tok, ancla, alGuardar = null) {
     el('div.g-sig', tok.s),
     tok.b ? el('div.g-nota', `forma de diccionario: ${tok.b}`) : null,
     el('div.fila', { style: { gap: '6px' } },
-      el('button.btn.chico', { onclick: e => { e.stopPropagation(); hablar(tok.r || tok.t); } }, '🔊 escuchar'),
+      el('button.btn.chico', { onclick: e => { e.stopPropagation(); hablar(tok.r || tok.t); } }, 'escuchar'),
       alGuardar ? el('button.btn.chico', { onclick: e => {
         e.stopPropagation();
-        e.currentTarget.textContent = alGuardar(tok) ? '⭐ ya estaba en tu mazo' : '⭐ ¡guardada!';
+        e.currentTarget.textContent = alGuardar(tok) ? '★ ya estaba en tu mazo' : '★ ¡guardada!';
         e.currentTarget.disabled = true;
       } }, '☆ guardar') : null),
   ].filter(Boolean));

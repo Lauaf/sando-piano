@@ -59,7 +59,7 @@ function leer(t) {
 
 export function montarMando() {
   if (!navigator.getGamepads) return;
-  addEventListener('gamepadconnected', () => toast('🎮 Mando conectado: A elegir · B volver · Start menú'));
+  addEventListener('gamepadconnected', () => toast('Mando conectado: A elegir · B volver · Start menú'));
   addEventListener('gamepaddisconnected', () => { for (const k of apretadas.keys()) simularTecla('keyup', k, k); apretadas.clear(); });
   requestAnimationFrame(leer);
 }

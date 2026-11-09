@@ -50,8 +50,8 @@ async function iniciar() {
   addEventListener('keydown', () => audio()); // el navegador exige un gesto para habilitar el audio
   addEventListener('pointerdown', () => audio(), { once: true });
   $('#hud-perfil').addEventListener('click', () => abrirEncima('Mi progreso', pantallaPerfil));
-  $('#hud-misiones').addEventListener('click', () => abrirEncima('✅ Misiones de hoy', pantallaMisiones));
-  $('#btn-menu').addEventListener('click', () => abrirEncima('⚙️ Opciones', pantallaOpciones));
+  $('#hud-misiones').addEventListener('click', () => abrirEncima('Misiones de hoy', pantallaMisiones));
+  $('#btn-menu').addEventListener('click', () => abrirEncima('Opciones', pantallaOpciones));
 
   // otra ventana pudo haber guardado mientras esta estaba en segundo plano
   const alVolver = () => { if (!document.hidden && !dialogo.activo) sincronizar(); };

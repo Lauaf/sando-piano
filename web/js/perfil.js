@@ -8,7 +8,7 @@ const COLOR = { jp: 'var(--sakura)', piano: 'var(--azul)', cafe: '#d39a62' };
 export function pantallaMisiones(c) {
   c.append(el('div.suave', 'Se renuevan cada día. Cada una da +30 XP.'),
     ...misionesDeHoy().map(m => el('div.panel', el('div.fila',
-      el('span', { style: { fontSize: '1.4em' } }, m.hecha ? '✅' : SKILLS[SENDA].ico),
+      el('span', { style: { fontSize: '1.4em' } }, m.hecha ? '✓' : SKILLS[SENDA].ico),
       el('div', { style: { flex: 1 } }, el('div', m.texto), el('div.hp', { style: { marginTop: '6px' } }, el('i', { style: { width: (m.prog / m.meta * 100) + '%', background: m.hecha ? 'var(--bien)' : 'var(--oro)' } }))),
       el('span.suave', `${m.prog}/${m.meta}`)))));
 }
@@ -20,7 +20,7 @@ function resumen() {
     el('div.panel', el('div', `${s.ico} ${s.nombre} — Nv ${n}`), el('div.suave', tituloDe(SENDA)),
       el('div.hp', { style: { marginTop: '6px' } }, el('i', { style: { width: pct + '%', background: 'var(--oro)' } })),
       el('div.suave', { style: { fontSize: '.7em' } }, `${xp} XP · faltan ${xpDeNivel(n + 1) - xp} para Nv ${n + 1}`)),
-    el('div.panel', el('div', `🔥 Racha: ${rachaViva()} días`), el('div.suave', `Mejor racha: ${P.racha.mejor}`)));
+    el('div.panel', el('div', `Racha: ${rachaViva()} días`), el('div.suave', `Mejor racha: ${P.racha.mejor}`)));
 }
 
 function semanas() {
@@ -37,7 +37,7 @@ function semanas() {
 function logros() {
   const lista = listaLogros();
   return el('div.ac-seccion',
-    el('div.logros-cab', el('h3.ac-h3', `🏅 Logros · ${lista.filter(l => l.tiene).length} de ${lista.length}`),
+    el('div.logros-cab', el('h3.ac-h3', `Logros · ${lista.filter(l => l.tiene).length} de ${lista.length}`),
       el('div.suave', 'Se ganan con habilidades reales, no con tiempo jugado.')),
     el('div.logros', lista.map(l => {
       const [act, meta] = l.prog();
@@ -51,9 +51,9 @@ function logros() {
 
 export function pantallaPerfil(c, ctx) {
   c.append(resumen(),
-    el('div.ac-seccion', el('div.fila', el('h3.ac-h3', '✅ Misiones de hoy')), el('div.ac-recs', misionesDeHoy().map(m =>
-      el('div.fila', { style: { fontSize: '.85em' } }, el('span', m.hecha ? '✅' : '▫️'), el('span', { style: { flex: 1 } }, m.texto), el('span.suave', `${m.prog}/${m.meta}`))))),
-    el('div.ac-seccion', el('h3.ac-h3', '📊 Tus últimas dos semanas'), semanas()),
+    el('div.ac-seccion', el('div.fila', el('h3.ac-h3', 'Misiones de hoy')), el('div.ac-recs', misionesDeHoy().map(m =>
+      el('div.fila', { style: { fontSize: '.85em' } }, el('span', m.hecha ? '✓' : '·'), el('span', { style: { flex: 1 } }, m.texto), el('span.suave', `${m.prog}/${m.meta}`))))),
+    el('div.ac-seccion', el('h3.ac-h3', 'Tus últimas dos semanas'), semanas()),
     logros(),
-    el('div.fila', el('button.btn', { onclick: () => ctx.ir('⚙️ Opciones', pantallaOpciones) }, '⚙️ Opciones y respaldo')));
+    el('div.fila', el('button.btn', { onclick: () => ctx.ir('Opciones', pantallaOpciones) }, 'Opciones y respaldo')));
 }

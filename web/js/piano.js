@@ -38,10 +38,10 @@ function barraMic(ctx, conPrueba = false) {
       const on = !entrada.mic.activo;
       await activarMic(on, P.piano.mic.dispositivo);
       P.piano.mic.on = on; guardar();
-      if (on) toast('🎤 Te escucho. Con auriculares puestos, tocá de a una nota.');
-    } catch { toast('No pude usar el micrófono: revisá el permiso del navegador (ícono 🔒 o 🎤 en la barra de direcciones).'); }
+      if (on) toast('Te escucho. Con auriculares puestos, tocá de a una nota.');
+    } catch { toast('No pude usar el micrófono: revisá el permiso del navegador (el ícono del candado o del micrófono en la barra de direcciones).'); }
     ctx.rehacer();
-  } }, entrada.mic.activo ? '🎤 Apagar micrófono' : '🎤 Escuchar mi piano');
+  } }, entrada.mic.activo ? 'Apagar micrófono' : 'Escuchar mi piano');
   let vivo = true, sostener = 0;
   const desvio = el('span.suave', { style: { minWidth: '4.5em' } });
   const off = escuchar(ev => { if (ev.tipo === 'on' && ev.fuente === 'mic') { nota.textContent = nombreNota(ev.m, P.piano.nombres, true); sostener = performance.now() + 900; } });
@@ -61,26 +61,26 @@ function barraMic(ctx, conPrueba = false) {
 }
 
 function estadoEntrada() {
-  const partes = ['⌨️ teclado PC (A W S E D F T G Y H U J K…)'];
-  if (entrada.midi.ok) partes.push(`🎹 MIDI: ${entrada.midi.nombres.join(', ')}`);
-  if (entrada.mic.activo) partes.push('🎤 micrófono');
+  const partes = ['teclado PC (A W S E D F T G Y H U J K…)'];
+  if (entrada.midi.ok) partes.push(`MIDI: ${entrada.midi.nombres.join(', ')}`);
+  if (entrada.mic.activo) partes.push('micrófono');
   return partes.join(' · ');
 }
 
 function hub(c, ctx) {
-  const t = (ico, tit, desc, tag, fn) => el('button.tarjeta', { onclick: fn }, el('div.t-ico', ico), el('div.t-tit', tit), el('div.t-desc', desc), tag ? el('div.t-tag', tag) : null);
+  const t = (tit, desc, tag, fn) => el('button.tarjeta', { onclick: fn }, el('div.t-tit', tit), el('div.t-desc', desc), tag ? el('div.t-tag', tag) : null);
   const mins = (P.piano.practica || []).filter(p => p.fecha === hoy()).reduce((s, p) => s + p.min, 0);
   const bm = barraMic(ctx);
   c.append(
     bm.nodo,
     el('div.suave', `Entrada: ${estadoEntrada()}`),
     el('div.rejilla',
-      t('🎼', 'Lectura de notas', 'Las notas avanzan por el pentagrama: tocalas antes de que lleguen. Clave de sol y de fa.', `${P.stats.nota_ok || 0} notas leídas`, () => ctx.ir('Lectura de notas', lecturaNotas)),
-      t('🎹', 'Canciones y tarea', 'Tus canciones (YouTube, partituras, MuseScore) y la tarea de tus clases, con digitación, manos separadas y bucle.', `${CANCIONES.length} clásicas + las tuyas`, () => ctx.ir('Canciones y tarea', biblioteca)),
-      t('👂', 'Oído', 'Repetí notas, reconocé intervalos y acordes mayores/menores.', null, () => ctx.ir('Oído', oido)),
-      t('🎶', 'Acordes', 'Do, Fa, Sol, Lam… y las progresiones que suenan en todas las canciones.', null, () => ctx.ir('Acordes', acordes)),
-      t('⏱️', 'Práctica real', 'Metrónomo, cronómetro y registro de lo que practicás en tu piano. Rin te arma un plan.', `${mins} min hoy`, () => ctx.ir('Práctica real', practicaReal)),
-      t('⚙️', 'Ajustes y micrófono', 'Elegí el mic de tus auriculares, ajustá la sensibilidad y probalo. Nombres de notas.', P.piano.nombres === 'latino' ? 'Do Re Mi' : 'C D E', () => ctx.ir('Ajustes y micrófono', ajustes)),
+      t('Lectura de notas', 'Las notas avanzan por el pentagrama: tocalas antes de que lleguen. Clave de sol y de fa.', `${P.stats.nota_ok || 0} notas leídas`, () => ctx.ir('Lectura de notas', lecturaNotas)),
+      t('Canciones y tarea', 'Tus canciones (YouTube, partituras, MuseScore) y la tarea de tus clases, con digitación, manos separadas y bucle.', `${CANCIONES.length} clásicas + las tuyas`, () => ctx.ir('Canciones y tarea', biblioteca)),
+      t('Oído', 'Repetí notas, reconocé intervalos y acordes mayores/menores.', null, () => ctx.ir('Oído', oido)),
+      t('Acordes', 'Do, Fa, Sol, Lam… y las progresiones que suenan en todas las canciones.', null, () => ctx.ir('Acordes', acordes)),
+      t('Práctica real', 'Metrónomo, cronómetro y registro de lo que practicás en tu piano. Rin te arma un plan.', `${mins} min hoy`, () => ctx.ir('Práctica real', practicaReal)),
+      t('Ajustes y micrófono', 'Elegí el mic de tus auriculares, ajustá la sensibilidad y probalo. Nombres de notas.', P.piano.nombres === 'latino' ? 'Do Re Mi' : 'C D E', () => ctx.ir('Ajustes y micrófono', ajustes)),
     ));
   return bm.limpiar;
 }
@@ -102,21 +102,21 @@ function ajustes(c, ctx) {
   sens.addEventListener('input', () => { P.piano.mic.umbral = entrada.mic.umbral = +sens.value; pintarSens(); guardar(); });
   pintarSens();
   c.append(
-    el('div.mediano', { style: { fontSize: '1.1em' } }, '🎤 Que el juego escuche tu piano'),
+    el('div.mediano', { style: { fontSize: '1.1em' } }, 'Que el juego escuche tu piano'),
     el('div.fila', el('span', 'Micrófono:'), selMic),
     bm.nodo,
     el('div.slider', el('span', 'Umbral'), sens, sensVal),
     el('div.panel', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
-      el('div', `🎯 Afinación de tu piano: ${P.piano.mic.afinacion ? `${P.piano.mic.afinacion > 0 ? '+' : ''}${P.piano.mic.afinacion} cents (calibrado)` : 'sin calibrar (se asume La = 440 Hz)'}`),
+      el('div', `Afinación de tu piano: ${P.piano.mic.afinacion ? `${P.piano.mic.afinacion > 0 ? '+' : ''}${P.piano.mic.afinacion} cents (calibrado)` : 'sin calibrar (se asume La = 440 Hz)'}`),
       el('div.suave', { style: { fontSize: '.8em' } }, 'Los pianos acústicos casi nunca están en 440 exacto. Si una nota sale como su vecina (Do → Do#) o los "cents" de arriba quedan cerca de ±50, calibrá: apretá el botón y tocá el Do central (o cualquier Do) varias veces, de a una, durante 8 segundos.'),
       el('div.fila',
         el('button.btn.prim', { disabled: !entrada.mic.activo, onclick: async e => {
-          e.target.disabled = true; e.target.textContent = '🎹 Tocá Do varias veces… (8 s)';
+          e.target.disabled = true; e.target.textContent = 'Tocá Do varias veces… (8 s)';
           const r = await calibrar(8000, 60);
           if (r == null) toast('No escuché bien un Do. Probá de nuevo: solo Do, de a una nota y fuerte.');
           else { P.piano.mic.afinacion = r; guardar(); toast(`Listo: tu piano está ${r > 0 ? '+' : ''}${r} cents respecto de 440 Hz`); }
           ctx.rehacer();
-        } }, entrada.mic.activo ? '🎯 Calibrar con mi piano' : '🎯 Calibrar (prendé el mic primero)'),
+        } }, entrada.mic.activo ? 'Calibrar con mi piano' : 'Calibrar (prendé el mic primero)'),
         P.piano.mic.afinacion ? el('button.btn', { onclick: () => { P.piano.mic.afinacion = entrada.mic.afinacion = 0; guardar(); ctx.rehacer(); } }, 'Restablecer') : null)),
     el('div.panel.suave', { style: { fontSize: '.8em', lineHeight: 1.6 } },
       '1) Elegí el micrófono de tus auriculares y apretá "Escuchar mi piano" (el navegador pide permiso una vez).', el('br'),
@@ -124,7 +124,7 @@ function ajustes(c, ctx) {
       '3) Tocá una nota fuerte: tiene que aparecer su nombre. Si no aparece, mové el umbral a la izquierda (más sensible).', el('br'),
       '4) Dejá los auriculares puestos para que el mic no escuche el sonido del juego. El mic oye de a una nota: los acordes, tocalos arpegiados.'),
     el('div', 'Nombres de las notas'), chips([['latino', 'Do Re Mi'], ['ingles', 'C D E']], P.piano.nombres, v => { P.piano.nombres = v; }),
-    el('div.fila', el('button.btn', { onclick: async () => { const ok = await activarMIDI(); toast(ok ? `MIDI conectado: ${entrada.midi.nombres.join(', ')}` : 'No encontré ningún piano MIDI.'); ctx.rehacer(); } }, '🔌 Buscar piano MIDI'),
+    el('div.fila', el('button.btn', { onclick: async () => { const ok = await activarMIDI(); toast(ok ? `MIDI conectado: ${entrada.midi.nombres.join(', ')}` : 'No encontré ningún piano MIDI.'); ctx.rehacer(); } }, 'Buscar piano MIDI'),
       el('span.suave', entrada.midi.ok ? `✓ ${entrada.midi.nombres.join(', ')}` : 'sin piano MIDI (no hace falta si usás el mic)')),
     el('div.suave', { style: { fontSize: '.75em' } }, 'Teclado de la compu: A=Do, W=Do#, S=Re, E=Re#, D=Mi, F=Fa, T=Fa#, G=Sol, Y=Sol#, H=La, U=La#, J=Si, K=Do agudo.'),
   );
@@ -156,7 +156,7 @@ function lecturaNotas(c, ctx) {
   let destello = 0, fallo = null, escuchado = null; // fallo: nota que se pasó (queda congelada en rojo)
 
   function pintarMarcador() {
-    marcador.replaceChildren(el('span', '♥'.repeat(vidas) + '♡'.repeat(3 - vidas)), el('span', `✓ ${puntos}`), combo > 2 ? el('span', `🔥 x${combo}`) : '', el('span.suave', `velocidad ${Math.round(vel)}`));
+    marcador.replaceChildren(el('span', '♥'.repeat(vidas) + '♡'.repeat(3 - vidas)), el('span', `✓ ${puntos}`), combo > 2 ? el('span', `combo x${combo}`) : '', el('span.suave', `velocidad ${Math.round(vel)}`));
   }
   function frame(t) {
     if (!activo) return;
@@ -220,7 +220,7 @@ function lecturaNotas(c, ctx) {
     marcador.replaceChildren(el('span', `Fin: ${puntos} notas · +${xp} XP`),
       el('button.btn.prim', { onclick: () => ctx.rehacer() }, 'Jugar de nuevo'));
     if (puntos >= 25 && P.piano.nivelLectura < NIVELES_LECTURA.length - 1 && P.piano.nivelLectura === NIVELES_LECTURA.indexOf(nivel)) {
-      toast('Desbloqueaste el siguiente nivel de lectura 🎼');
+      toast('Desbloqueaste el siguiente nivel de lectura');
       P.piano.nivelLectura++;
       guardar();
     }
@@ -291,10 +291,10 @@ function oido(c, ctx) {
       const ac = elegir(ACORDES);
       actual = { tipo: 'acorde', notas: ac.notas, ac };
       zona.append(el('div', '¿Mayor (alegre) o menor (triste)?'), el('div.opciones4',
-        el('button.btn', { onclick: e => resp(ac.tipo === 'mayor', e.currentTarget, `${ac.n} (${ac.tipo})`) }, '😊 Mayor'),
-        el('button.btn', { onclick: e => resp(ac.tipo === 'menor', e.currentTarget, `${ac.n} (${ac.tipo})`) }, '😢 Menor')));
+        el('button.btn', { onclick: e => resp(ac.tipo === 'mayor', e.currentTarget, `${ac.n} (${ac.tipo})`) }, 'Mayor'),
+        el('button.btn', { onclick: e => resp(ac.tipo === 'menor', e.currentTarget, `${ac.n} (${ac.tipo})`) }, 'Menor')));
     }
-    zona.append(el('button.btn', { onclick: tocar }, '🔊 Escuchar de nuevo'));
+    zona.append(el('button.btn', { onclick: tocar }, 'Escuchar de nuevo'));
     setTimeout(tocar, 300);
   }
   async function resp(bien, boton, explic) {
@@ -411,7 +411,7 @@ function practicaReal(c, ctx) {
   notaInp.addEventListener('keydown', e => e.stopPropagation());
   const registrar = () => {
     const min = Math.round(segs() / 60);
-    if (min < 1) return toast('Practicá al menos 1 minuto 🙂');
+    if (min < 1) return toast('Practicá al menos 1 minuto');
     if (inicio) alternarCrono();
     P.piano.practica.unshift({ fecha: hoy(), min, temas: [...temas], nota: notaInp.value.trim() });
     P.piano.practica = P.piano.practica.slice(0, 200);
@@ -420,16 +420,16 @@ function practicaReal(c, ctx) {
     acumulado = 0; vReloj.textContent = '00:00';
     ctx.rehacer();
   };
-  const plan = el('div.panel', el('div', '🗒️ Plan de hoy de Rin'), el('ol', { style: { margin: '6px 0 0', paddingLeft: '1.3em', fontSize: '.85em', lineHeight: 1.5 } },
+  const plan = el('div.panel', el('div', 'Plan de hoy de Rin'), el('ol', { style: { margin: '6px 0 0', paddingLeft: '1.3em', fontSize: '.85em', lineHeight: 1.5 } },
     (P.piano.planHoy?.fecha === hoy() ? P.piano.planHoy.pasos : PLANES[new Date().getDate() % PLANES.length]).map(p => el('li', p))),
   IA.disponible ? el('button.btn.chico', { onclick: async e => {
     e.target.disabled = true; e.target.textContent = 'Rin está pensando…';
     const ultimos = P.piano.practica.slice(0, 6).map(p => `${p.fecha}: ${p.min} min ${p.temas.join(',')} ${p.nota}`).join('\n') || 'sin registros';
     const r = await preguntar('Sos Rin, una profesora de piano cálida y concreta. Respondés SOLO JSON.', [{ role: 'user', content:
       `Armá un plan de práctica de 15-20 minutos para hoy, para un alumno de piano adulto que está empezando (nivel de juego ${Math.floor(Math.sqrt(P.skills.piano.xp / 40)) + 1}, notas leídas: ${P.stats.nota_ok || 0}, canciones: ${Object.entries(P.piano.mejores).map(([k, v]) => k + ' ' + v + '%').join(', ') || 'ninguna'}). Últimas prácticas:\n${ultimos}\nVariá respecto a lo anterior. Formato: {"pasos":["4 min: ...","..."],"consejo":"un consejo técnico corto"}` }], { json: true, max_tokens: 700 });
-    if (r?.pasos) { P.piano.planHoy = { fecha: hoy(), pasos: [...r.pasos, r.consejo ? `💡 ${r.consejo}` : ''].filter(Boolean) }; guardar(); }
+    if (r?.pasos) { P.piano.planHoy = { fecha: hoy(), pasos: [...r.pasos, r.consejo || ''].filter(Boolean) }; guardar(); }
     ctx.rehacer();
-  } }, '✨ Pedirle un plan nuevo a Rin') : null);
+  } }, 'Pedirle un plan nuevo a Rin') : null);
 
   const historial = P.piano.practica.slice(0, 6);
   c.append(
@@ -441,7 +441,7 @@ function practicaReal(c, ctx) {
         metroBtn),
       el('div.panel', el('div', 'Sesión en tu piano'), el('div.fila', vReloj, cronoBtn),
         el('div.chips', ['escalas', 'acordes', 'lectura', 'canción', 'técnica', 'improvisar'].map(t => el('button.chip', { onclick: e => { temas.has(t) ? temas.delete(t) : temas.add(t); e.target.classList.toggle('sel'); } }, t))),
-        notaInp, el('button.btn', { onclick: registrar }, '✔ Registrar sesión'))),
+        notaInp, el('button.btn', { onclick: registrar }, '✓ Registrar sesión'))),
     plan,
     historial.length ? el('div.panel', el('div', 'Últimas sesiones'), el('table.tabla', el('tr', el('th', 'día'), el('th', 'min'), el('th', 'qué')),
       historial.map(p => el('tr', el('td', p.fecha.slice(5)), el('td', p.min), el('td', [p.temas.join(', '), p.nota].filter(Boolean).join(' — ')))))) : null,
